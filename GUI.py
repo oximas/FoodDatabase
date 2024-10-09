@@ -31,19 +31,34 @@ class PriceTrackerApp:
         # Clear the current widgets
         for widget in self.root.winfo_children():
             widget.destroy()
-        
+        self.root.geometry("300x500")
         # Add a label for price entry
         tk.Label(self.root, text="Add New Price Entry", font=("Arial", 16)).pack(pady=10)
 
         # Entry for food ID
-        tk.Label(self.root, text="Food ID:").pack(pady=5)
-        food_id_entry = tk.Entry(self.root)
-        food_id_entry.pack(pady=5)
+        tk.Label(self.root, text="Add New Price Entry", font=("Arial", 16)).pack(pady=10)
 
-        # Entry for place ID
-        tk.Label(self.root, text="Place ID:").pack(pady=5)
-        place_id_entry = tk.Entry(self.root)
-        place_id_entry.pack(pady=5)
+        # Fetch food items from the database
+        self.food_items = self.db.cursor.execute("SELECT food_name FROM FoodItems").fetchall()
+        food_names = [food[0] for food in self.food_items]  # Extract food names
+
+        # Create a dropdown for food selection
+        tk.Label(self.root, text="Select Food:").pack(pady=5)
+        food_var = tk.StringVar(self.root)
+        food_var.set(food_names[0] if food_names else "No food items available")  # Default value
+        food_menu = tk.OptionMenu(self.root, food_var, *food_names)
+        food_menu.pack(pady=5)
+
+        # Fetch places from the database
+        self.places = self.db.cursor.execute("SELECT place_name FROM Places").fetchall()
+        place_names = [place[0] for place in self.places]  # Extract place names
+
+        # Create a dropdown for place selection
+        tk.Label(self.root, text="Select Place:").pack(pady=5)
+        place_var = tk.StringVar(self.root)
+        place_var.set(place_names[0] if place_names else "No places available")  # Default value
+        place_menu = tk.OptionMenu(self.root, place_var, *place_names)
+        place_menu.pack(pady=5)
 
         # Entry for price
         tk.Label(self.root, text="Price:").pack(pady=5)
@@ -56,7 +71,7 @@ class PriceTrackerApp:
         amount_entry.pack(pady=5)
 
         # Button to submit the price entry
-        tk.Button(self.root, text="Submit", command=lambda: self.submit_price(food_id_entry.get(), place_id_entry.get(), price_entry.get(), amount_entry.get())).pack(pady=10)
+        tk.Button(self.root, text="Submit", command=lambda: self.submit_price(food_var.get(), place_var.get(), price_entry.get(), amount_entry.get())).pack(pady=10)
 
         # Button to go back to the main menu
         tk.Button(self.root, text="Back", command=self.main_menu).pack(pady=5)
@@ -108,7 +123,7 @@ class PriceTrackerApp:
         # Clear the current widgets
         for widget in self.root.winfo_children():
             widget.destroy()
-        
+        self.root.geometry("300x350")
         # Main menu buttons
         self.add_price_button = tk.Button(self.root, text="Add New Price Entry", command=self.price_adding_page)
         self.add_price_button.pack(pady=10)
