@@ -6,7 +6,8 @@ from tkinter import filedialog  # Import filedialog for file-saving dialog
 class Database:
     def __init__(self, db_name="food_prices.db"):
         self.conn = sqlite3.connect(db_name)
-        self.c = self.conn.c()
+        self.c = self.conn.cursor()
+        self.make_tables()
 
     def make_tables(self):
         # Create FoodItems table
@@ -14,7 +15,6 @@ class Database:
             CREATE TABLE IF NOT EXISTS FoodItems (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 food_name TEXT NOT NULL,
-                unit TEXT NOT NULL
             );
         ''')
         
@@ -26,6 +26,13 @@ class Database:
             );
         ''')
 
+        # Create Units table
+        self.c.execute('''
+            CREATE TABLE IF NOT EXISTS Units (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                unit_name TEXT NOT NULL
+            );
+        ''')
         # Create Prices table
         self.c.execute('''
             CREATE TABLE IF NOT EXISTS Prices (
@@ -34,6 +41,7 @@ class Database:
                 place_id INTEGER NOT NULL,
                 price REAL NOT NULL,
                 amount REAL NOT NULL,
+                unit TEXT NOT NULL
                 purchase_time DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (food_id) REFERENCES FoodItems(id),
                 FOREIGN KEY (place_id) REFERENCES Places(id)
@@ -55,13 +63,13 @@ class Database:
         print(f"New price entry added: food_id={food_id}, place_id={place_id}, price={price}, amount={amount}, time={purchase_time}")
 
     # Function to add a new food item
-    def add_food(self, food_name, unit):
+    def add_food(self, food_name):
         self.c.execute('''
-            INSERT INTO FoodItems (food_name, unit)
-            VALUES (?, ?)
-        ''', (food_name, unit))
+            INSERT INTO FoodItems (food_name)
+            VALUES (?)
+        ''', (food_name))
         self.conn.commit()
-        print(f"New food item added: {food_name} ({unit})")
+        print(f"New food item added: {food_name}")
 
     # Function to add a new place
     def add_place(self, place_name):
@@ -71,6 +79,14 @@ class Database:
         ''', (place_name,))
         self.conn.commit()
         print(f"New place added: {place_name}")
+     # Function to add a new place
+    def add_unit(self, unit_name):
+        self.c.execute('''
+            INSERT INTO Places (unit_name)
+            VALUES (?)
+        ''', (unit_name,))
+        self.conn.commit()
+        print(f"New unit added: {unit_name}")
 
     # Function to export prices to an Excel file (prompts for location)
     def export_to_excel(self):
@@ -103,3 +119,6 @@ class Database:
     def get_place_names(self):
         places = self.c.execute("SELECT place_name FROM Places").fetchall()
         return [place[0] for place in places]
+    def get_unir_names(self):
+        units = self.c.execute("SELECT unit_name FROM Units").fetchall()
+        return [unit[0] for unit in places]
