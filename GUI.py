@@ -39,8 +39,8 @@ class PriceTrackerApp:
         tk.Label(self.root, text="Add New Price Entry", font=("Arial", 16)).pack(pady=10)
 
         # Fetch food items from the database
-        self.food_items = self.db.cursor.execute("SELECT food_name FROM FoodItems").fetchall()
-        food_names = [food[0] for food in self.food_items]  # Extract food names
+       
+        food_names = self.db.get_food_names()  # Extract food names
 
         # Create a dropdown for food selection
         tk.Label(self.root, text="Select Food:").pack(pady=5)
@@ -50,8 +50,7 @@ class PriceTrackerApp:
         food_menu.pack(pady=5)
 
         # Fetch places from the database
-        self.places = self.db.cursor.execute("SELECT place_name FROM Places").fetchall()
-        place_names = [place[0] for place in self.places]  # Extract place names
+        place_names = self.db.get_place_names()  # Extract place names
 
         # Create a dropdown for place selection
         tk.Label(self.root, text="Select Place:").pack(pady=5)

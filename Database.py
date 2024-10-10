@@ -95,3 +95,11 @@ class Database:
 
     def close(self):
         self.conn.close()
+
+    def get_food_names(self):
+        foods = self.c.execute("SELECT food_name FROM FoodItems").fetchall()
+        return [food[0] for food in foods]
+
+    def get_place_names(self):
+        places = self.c.execute("SELECT place_name FROM Places").fetchall()
+        return [place[0] for place in places]
