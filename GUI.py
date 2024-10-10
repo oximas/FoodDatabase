@@ -32,8 +32,6 @@ class PriceTrackerApp:
         for widget in self.root.winfo_children():
             widget.destroy()
         self.root.geometry("300x500")
-        # Add a label for price entry
-        tk.Label(self.root, text="Add New Price Entry", font=("Arial", 16)).pack(pady=10)
 
         # Entry for food ID
         tk.Label(self.root, text="Add New Price Entry", font=("Arial", 16)).pack(pady=10)
@@ -45,8 +43,9 @@ class PriceTrackerApp:
         # Create a dropdown for food selection
         tk.Label(self.root, text="Select Food:").pack(pady=5)
         food_var = tk.StringVar(self.root)
-        food_var.set(food_names[0] if food_names else "No food items available")  # Default value
-        food_menu = tk.OptionMenu(self.root, food_var, *food_names)
+        def__food_value = food_names[0] if food_names else "No food items available"
+        food_var.set(def__food_value)  # Default value
+        food_menu = tk.OptionMenu(self.root, food_var,def__food_value, *food_names)
         food_menu.pack(pady=5)
 
         # Fetch places from the database
@@ -55,8 +54,9 @@ class PriceTrackerApp:
         # Create a dropdown for place selection
         tk.Label(self.root, text="Select Place:").pack(pady=5)
         place_var = tk.StringVar(self.root)
-        place_var.set(place_names[0] if place_names else "No places available")  # Default value
-        place_menu = tk.OptionMenu(self.root, place_var, *place_names)
+        def_place_value = place_names[0] if place_names else "No places available"
+        place_var.set(def_place_value)  # Default value
+        place_menu = tk.OptionMenu(self.root, place_var,def_place_value, *place_names)
         place_menu.pack(pady=5)
 
         # Entry for price
@@ -69,9 +69,27 @@ class PriceTrackerApp:
         amount_entry = tk.Entry(self.root)
         amount_entry.pack(pady=5)
 
-        # Button to submit the price entry
-        tk.Button(self.root, text="Submit", command=lambda: self.submit_price(food_var.get(), place_var.get(), price_entry.get(), amount_entry.get())).pack(pady=10)
+         # Fetch places from the database
+        unit_names = self.db.get_unit_names()  # Extract place names
 
+        # Create a dropdown for unit selection
+        tk.Label(self.root, text="Select Unit:").pack(pady=5)
+        unit_var = tk.StringVar(self.root)
+        def_unit_value = unit_names[0] if unit_names else "No units available"
+        unit_var.set(def_unit_value)  # Default value
+        unit_menu = tk.OptionMenu(self.root, unit_var,def_unit_value, *unit_names)
+        unit_menu.pack(pady=5)
+
+        # Button to submit the price entry
+        food_value = food_var.get()
+        place_value = place_var.get()
+        price_value = price_entry.get()
+        amount_value = amount_entry.get()
+        unit_value = unit_var.get()
+        tk.Button(self.root, text="Submit", command=lambda: self.db.add_price(food_value, place_value, price_value, amount_value,unit_value)).pack(pady=10)
+        #if(food_value and price_value and amount_value and place_value and unit_value):
+        #else:
+        #    messagebox.showwarning("all entries should be filled")
         # Button to go back to the main menu
         tk.Button(self.root, text="Back", command=self.main_menu).pack(pady=5)
 

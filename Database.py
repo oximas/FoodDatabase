@@ -14,7 +14,7 @@ class Database:
         self.c.execute('''
             CREATE TABLE IF NOT EXISTS FoodItems (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                food_name TEXT NOT NULL,
+                food_name TEXT NOT NULL
             );
         ''')
         
@@ -41,7 +41,7 @@ class Database:
                 place_id INTEGER NOT NULL,
                 price REAL NOT NULL,
                 amount REAL NOT NULL,
-                unit TEXT NOT NULL
+                unit TEXT NOT NULL,
                 purchase_time DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (food_id) REFERENCES FoodItems(id),
                 FOREIGN KEY (place_id) REFERENCES Places(id)
@@ -51,16 +51,16 @@ class Database:
         self.conn.commit()
 
     # Function to add a new price entry
-    def add_price(self, food_id, place_id, price, amount, purchase_time=None):
+    def add_price(self, food_id, place_id, price, amount,unit, purchase_time=None):
         if purchase_time is None:
             purchase_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
         self.c.execute('''
-            INSERT INTO Prices (food_id, place_id, price, amount, purchase_time)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (food_id, place_id, price, amount, purchase_time))
+            INSERT INTO Prices (food_id, place_id, price, amount,unit, purchase_time)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (food_id, place_id, price, amount, unit, purchase_time))
         self.conn.commit()
-        print(f"New price entry added: food_id={food_id}, place_id={place_id}, price={price}, amount={amount}, time={purchase_time}")
+        print(f"New price entry added: food_id={food_id}, place_id={place_id}, price={price}, amount={amount}, unit={unit}, time={purchase_time}")
 
     # Function to add a new food item
     def add_food(self, food_name):
@@ -119,6 +119,6 @@ class Database:
     def get_place_names(self):
         places = self.c.execute("SELECT place_name FROM Places").fetchall()
         return [place[0] for place in places]
-    def get_unir_names(self):
+    def get_unit_names(self):
         units = self.c.execute("SELECT unit_name FROM Units").fetchall()
-        return [unit[0] for unit in places]
+        return [unit[0] for unit in units]
