@@ -6,11 +6,11 @@ from tkinter import filedialog  # Import filedialog for file-saving dialog
 class Database:
     def __init__(self, db_name="food_prices.db"):
         self.conn = sqlite3.connect(db_name)
-        self.cursor = self.conn.cursor()
+        self.c = self.conn.c()
 
     def make_tables(self):
         # Create FoodItems table
-        self.cursor.execute('''
+        self.c.execute('''
             CREATE TABLE IF NOT EXISTS FoodItems (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 food_name TEXT NOT NULL,
@@ -19,7 +19,7 @@ class Database:
         ''')
         
         # Create Places table
-        self.cursor.execute('''
+        self.c.execute('''
             CREATE TABLE IF NOT EXISTS Places (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 place_name TEXT NOT NULL
@@ -27,7 +27,7 @@ class Database:
         ''')
 
         # Create Prices table
-        self.cursor.execute('''
+        self.c.execute('''
             CREATE TABLE IF NOT EXISTS Prices (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 food_id INTEGER NOT NULL,
@@ -47,7 +47,7 @@ class Database:
         if purchase_time is None:
             purchase_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
-        self.cursor.execute('''
+        self.c.execute('''
             INSERT INTO Prices (food_id, place_id, price, amount, purchase_time)
             VALUES (?, ?, ?, ?, ?)
         ''', (food_id, place_id, price, amount, purchase_time))
@@ -56,7 +56,7 @@ class Database:
 
     # Function to add a new food item
     def add_food(self, food_name, unit):
-        self.cursor.execute('''
+        self.c.execute('''
             INSERT INTO FoodItems (food_name, unit)
             VALUES (?, ?)
         ''', (food_name, unit))
@@ -65,7 +65,7 @@ class Database:
 
     # Function to add a new place
     def add_place(self, place_name):
-        self.cursor.execute('''
+        self.c.execute('''
             INSERT INTO Places (place_name)
             VALUES (?)
         ''', (place_name,))
@@ -79,14 +79,14 @@ class Database:
                                                  filetypes=[("Excel files", "*.xlsx")])
         if file_path:
             # Query for data to export
-            self.cursor.execute('''
+            self.c.execute('''
                 SELECT Prices.id, FoodItems.food_name, Places.place_name, Prices.price, Prices.amount, Prices.purchase_time 
                 FROM Prices
                 JOIN FoodItems ON Prices.food_id = FoodItems.id
                 JOIN Places ON Prices.place_id = Places.id
             ''')
             
-            rows = self.cursor.fetchall()
+            rows = self.c.fetchall()
 
             # Create a DataFrame and export to the selected Excel file
             df = pd.DataFrame(rows, columns=['ID', 'Food', 'Place', 'Price', 'Amount', 'Time'])
