@@ -86,7 +86,7 @@ class PriceTrackerApp:
         price_value = price_entry.get()
         amount_value = amount_entry.get()
         unit_value = unit_var.get()
-        tk.Button(self.root, text="Submit", command=lambda: self.db.add_price(food_value, place_value, price_value, amount_value,unit_value)).pack(pady=10)
+        tk.Button(self.root, text="Submit", command=lambda: self.add_price(food_value, place_value, price_value, amount_value,unit_value)).pack(pady=10)
         #if(food_value and price_value and amount_value and place_value and unit_value):
         #else:
         #    messagebox.showwarning("all entries should be filled")
@@ -106,13 +106,8 @@ class PriceTrackerApp:
         food_name_entry = tk.Entry(self.root)
         food_name_entry.pack(pady=5)
 
-        # Entry for unit
-        tk.Label(self.root, text="Unit:").pack(pady=5)
-        unit_entry = tk.Entry(self.root)
-        unit_entry.pack(pady=5)
-
         # Button to submit the food entry
-        tk.Button(self.root, text="Submit", command=lambda: self.submit_food(food_name_entry.get(), unit_entry.get())).pack(pady=10)
+        tk.Button(self.root, text="Submit", command=lambda: self.add_food(food_name_entry.get())).pack(pady=10)
 
         # Button to go back to the main menu
         tk.Button(self.root, text="Back", command=self.main_menu).pack(pady=5)
@@ -131,11 +126,26 @@ class PriceTrackerApp:
         place_name_entry.pack(pady=5)
 
         # Button to submit the place entry
-        tk.Button(self.root, text="Submit", command=lambda: self.submit_place(place_name_entry.get())).pack(pady=10)
+        tk.Button(self.root, text="Submit", command=lambda: self.add_place(place_name_entry.get())).pack(pady=10)
 
         # Button to go back to the main menu
         tk.Button(self.root, text="Back", command=self.main_menu).pack(pady=5)
-
+    def add_price(self,food, place, price, amount,unit):
+        if food and place and price and amount and unit:
+            self.db.add_price(food, place, price, amount,unit)
+        else:
+            messagebox.showwarning("All etnries should be filled")
+    def add_food(self,food):
+        if food:
+            self.db.add_food(food)
+        else:
+            messagebox.showwarning("All etnries should be filled")
+    def add_place(self,place):
+        if place :
+            self.db.add_place(place)
+        else:
+            messagebox.showwarning("All etnries should be filled")
+        
     def main_menu(self):
         # Clear the current widgets
         for widget in self.root.winfo_children():
