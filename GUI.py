@@ -10,22 +10,7 @@ class PriceTrackerApp:
 
         # Dummy Database instance (replace with actual import)
         self.db = DB("food_prices.db")  # This will be your Database class later
-
-        # Buttons
-        self.add_price_button = tk.Button(root, text="Add New Price Entry", command=self.price_adding_page)
-        self.add_price_button.pack(pady=10)
-        
-        self.add_food_button = tk.Button(root, text="Add New Food", command=self.food_adding_page)
-        self.add_food_button.pack(pady=10)
-        
-        self.add_place_button = tk.Button(root, text="Add New Place", command=self.place_adding_page)
-        self.add_place_button.pack(pady=10)
-        
-        self.export_button = tk.Button(root, text="Export Prices to Excel", command=self.export_to_excel)
-        self.export_button.pack(pady=10)
-        
-        self.exit_button = tk.Button(root, text="Exit", command=self.exit_app)
-        self.exit_button.pack(pady=10)
+        self.main_menu()
 
     def price_adding_page(self):
         # Clear the current widgets
@@ -81,12 +66,10 @@ class PriceTrackerApp:
         unit_menu.pack(pady=5)
 
         # Button to submit the price entry
-        food_value = food_var.get()
-        place_value = place_var.get()
-        price_value = price_entry.get()
-        amount_value = amount_entry.get()
-        unit_value = unit_var.get()
-        tk.Button(self.root, text="Submit", command=lambda: self.add_price(food_value, place_value, price_value, amount_value,unit_value)).pack(pady=10)
+
+        tk.Button(self.root, text="Submit", 
+                  command=lambda: self.add_price(food_var.get(), place_var.get(),price_entry.get(),
+                                                amount_entry.get(),unit_var.get())).pack(pady=10)
         #if(food_value and price_value and amount_value and place_value and unit_value):
         #else:
         #    messagebox.showwarning("all entries should be filled")
@@ -132,17 +115,19 @@ class PriceTrackerApp:
         tk.Button(self.root, text="Back", command=self.main_menu).pack(pady=5)
     def add_price(self,food, place, price, amount,unit):
         if food and place and price and amount and unit:
+            food.capitalize()
+            place.capitalize()
             self.db.add_price(food, place, price, amount,unit)
         else:
             messagebox.showwarning("All etnries should be filled")
     def add_food(self,food):
         if food:
-            self.db.add_food(food)
+            self.db.add_food(food.capitalize())
         else:
             messagebox.showwarning("All etnries should be filled")
     def add_place(self,place):
         if place :
-            self.db.add_place(place)
+            self.db.add_place(place.capitalize())
         else:
             messagebox.showwarning("All etnries should be filled")
         
@@ -167,27 +152,10 @@ class PriceTrackerApp:
         self.exit_button = tk.Button(self.root, text="Exit", command=self.exit_app)
         self.exit_button.pack(pady=10)
 
-    # Dummy functions to replace with actual Database functions later
-    def add_price(self):
-        # Replace with actual functionality
-        print("Add new price entry called")
-        # self.db.add_price(...)
-
-    def add_food(self):
-        # Replace with actual functionality
-        print("Add new food called")
-        # self.db.add_food(...)
-
-    def add_place(self):
-        # Replace with actual functionality
-        print("Add new place called")
-        # self.db.add_place(...)
-
     def export_to_excel(self):
         # Replace with actual functionality
         print("Export to Excel called")
         # self.db.export_to_excel(...)
-
     def exit_app(self):
         # Confirm before exiting
         if messagebox.askokcancel("Quit", "Do you really want to exit?"):
