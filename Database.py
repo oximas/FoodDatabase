@@ -10,40 +10,41 @@ class Database:
         self.make_tables()
 
     def make_tables(self):
-        # Create FoodItems table
+        # Create Foods table
         self.c.execute('''
-            CREATE TABLE IF NOT EXISTS FoodItems (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                food_name TEXT NOT NULL
+            CREATE TABLE IF NOT EXISTS Foods (
+                food_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                food_name TEXT NOT NULL UNIQUE
             );
         ''')
         
         # Create Places table
         self.c.execute('''
             CREATE TABLE IF NOT EXISTS Places (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                place_name TEXT NOT NULL
+                place_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                place_name TEXT NOT NULL UNIQUE
             );
         ''')
 
         # Create Units table
         self.c.execute('''
             CREATE TABLE IF NOT EXISTS Units (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                unit_name TEXT NOT NULL
+                unit_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                unit_name TEXT NOT NULL UNIQUE
             );
         ''')
+        
         # Create Prices table
         self.c.execute('''
             CREATE TABLE IF NOT EXISTS Prices (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                price_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 food_id INTEGER NOT NULL,
                 place_id INTEGER NOT NULL,
                 price REAL NOT NULL,
                 amount REAL NOT NULL,
                 unit TEXT NOT NULL,
                 purchase_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (food_id) REFERENCES FoodItems(id),
+                FOREIGN KEY (food_id) REFERENCES Foods(id),
                 FOREIGN KEY (place_id) REFERENCES Places(id)
             );
         ''')
@@ -51,10 +52,17 @@ class Database:
         self.conn.commit()
 
     # Function to add a new price entry
-    def add_price(self, food_id, place_id, price, amount,unit, purchase_time=None):
+    def add_price(self, food_name, place_name, price, amount,unit, purchase_time=None):
         if purchase_time is None:
             purchase_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        
+        self.c.execute('''
+            SELECT food_id FROM Foods WHERE food_name=?
+        ''', (food_name,))
+        food_id = self.c.fetchone()[0]
+        self.c.execute('''
+            SELECT place_id FROM places WHERE place_name=?
+        ''', (place_name,))
+        place_id = self.c.fetchone()[0]
         self.c.execute('''
             INSERT INTO Prices (food_id, place_id, price, amount,unit, purchase_time)
             VALUES (?, ?, ?, ?, ?, ?)
@@ -65,9 +73,9 @@ class Database:
     # Function to add a new food item
     def add_food(self, food_name):
         self.c.execute('''
-            INSERT INTO FoodItems (food_name)
+            INSERT INTO Foods (food_name)
             VALUES (?)
-        ''', (food_name))
+        ''', (food_name,))
         self.conn.commit()
         print(f"New food item added: {food_name}")
 
@@ -82,7 +90,7 @@ class Database:
      # Function to add a new place
     def add_unit(self, unit_name):
         self.c.execute('''
-            INSERT INTO Places (unit_name)
+            INSERT INTO Units (unit_name)
             VALUES (?)
         ''', (unit_name,))
         self.conn.commit()
@@ -96,10 +104,10 @@ class Database:
         if file_path:
             # Query for data to export
             self.c.execute('''
-                SELECT Prices.id, FoodItems.food_name, Places.place_name, Prices.price, Prices.amount, Prices.purchase_time 
+                SELECT Places.place_id, Foods.food_name, Places.place_name, Prices.price, Prices.amount, Prices.purchase_time 
                 FROM Prices
-                JOIN FoodItems ON Prices.food_id = FoodItems.id
-                JOIN Places ON Prices.place_id = Places.id
+                JOIN Foods ON Prices.food_id = Foods.food_id
+                JOIN Places ON Prices.place_id = Places.place_id
             ''')
             
             rows = self.c.fetchall()
@@ -113,7 +121,7 @@ class Database:
         self.conn.close()
 
     def get_food_names(self):
-        foods = self.c.execute("SELECT food_name FROM FoodItems").fetchall()
+        foods = self.c.execute("SELECT food_name FROM Foods").fetchall()
         return [food[0] for food in foods]
 
     def get_place_names(self):
