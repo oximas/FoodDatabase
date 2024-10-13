@@ -44,8 +44,8 @@ class Database:
                 amount REAL NOT NULL,
                 unit TEXT NOT NULL,
                 purchase_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (food_id) REFERENCES Foods(id),
-                FOREIGN KEY (place_id) REFERENCES Places(id)
+                FOREIGN KEY (food_id) REFERENCES Foods(food_id),
+                FOREIGN KEY (place_id) REFERENCES Places(place_id)
             );
         ''')
 
