@@ -155,7 +155,12 @@ class PriceTrackerApp:
     def export_to_excel(self):
         # Replace with actual functionality
         print("Export to Excel called")
-        # self.db.export_to_excel(...)
+        try:
+            self.db.export_to_excel()
+        except PermissionError:
+            messagebox.showerror("couldn't export into excel",'''close any instancesof the file, 
+                                                                and make sure you have write permissions''')
+            
     def exit_app(self):
         # Confirm before exiting
         if messagebox.askokcancel("Quit", "Do you really want to exit?"):

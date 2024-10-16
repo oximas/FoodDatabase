@@ -105,7 +105,7 @@ class Database:
         if file_path:
             # Query for data to export
             self.c.execute('''
-                SELECT Places.place_id, Foods.food_name, Places.place_name, Prices.price, Prices.amount, Prices.purchase_time 
+                SELECT Foods.food_name, Places.place_name, Prices.price, Prices.amount, Prices.purchase_time 
                 FROM Prices
                 JOIN Foods ON Prices.food_id = Foods.food_id
                 JOIN Places ON Prices.place_id = Places.place_id
@@ -114,7 +114,7 @@ class Database:
             rows = self.c.fetchall()
 
             # Create a DataFrame and export to the selected Excel file
-            df = pd.DataFrame(rows, columns=['ID', 'Food', 'Place', 'Price', 'Amount', 'Time'])
+            df = pd.DataFrame(rows, columns=['Food', 'Place', 'Price', 'Amount', 'Time'])
             df.to_excel(file_path, index=False)
             print(f"Prices exported to {file_path}")
 
